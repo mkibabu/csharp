@@ -1,5 +1,7 @@
 using System;
 
+// Simple branch example executed using a switch statement
+
 namespace Switch
 {
     class Program
@@ -11,6 +13,7 @@ namespace Switch
             string door = Console.ReadLine();
             string message = "";
 
+            // like Java 7 and JS, switch can evaluate strings
             switch (door)
             {
                 case "1":

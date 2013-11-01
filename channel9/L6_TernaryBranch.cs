@@ -1,5 +1,7 @@
 using System;
 
+// Use of ternary operator
+
 namespace Ternary
 {
     class Program

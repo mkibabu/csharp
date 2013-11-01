@@ -1,5 +1,7 @@
 using System;
 
+// Simple keyboard input example
+
 namespace KeyboardInput
 {
     class Program

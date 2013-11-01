@@ -1,5 +1,7 @@
 using System;
 
+// Example showing use of a simple if-else branch.
+
 namespace Branching
 {
     class Program
