@@ -1,4 +1,6 @@
-*.swp
+*.sw
 *.exe
 *others/*
 *.out
+*.sln
+*.suo
