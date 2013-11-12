@@ -67,8 +67,6 @@ namespace L25_Structs
         {
             return string.Format("{0} : {1} - Area: {2}, Perimeter: {3}", 
                 this.Length, this.Width, this.Area, this.Perimeter);
-
-
         }
         
         // structs can have private methods as well
