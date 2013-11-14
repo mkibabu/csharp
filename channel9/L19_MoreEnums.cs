@@ -17,7 +17,7 @@ using System.Text;
 
 namespace L19_MoreEnums
 {
-    // the enum,, representing various machine states
+    // the enum, representing various machine states
     public enum MachineState : byte
     {
         PowerOff = 0,
@@ -29,7 +29,7 @@ namespace L19_MoreEnums
     class EnumEx
     {
 
-        // explicit cast of int to enum
+        // explicit cast of int to enum.
         public bool GetEnumFromUser()
         {
             Console.WriteLine("\n----------------------------------------------");
@@ -94,7 +94,8 @@ Please enter a desired machine state (0, 5, 10, 15)");
         {
             Console.WriteLine("\n--------------\nMachine States by name:");
             // Get all member names of the MachineState enum, and display their
-            // numeric values.
+            // numeric values. Enum.GetNames(Type enumType) returns a string array
+            // of the constants in an enumeration.
             foreach (string state in Enum.GetNames(typeof(MachineState)))
             {
                 Console.WriteLine("Machine State: {0} - Value: {1}",
@@ -107,7 +108,9 @@ Please enter a desired machine state (0, 5, 10, 15)");
         {
             Console.WriteLine("\n--------------\nMachine States by value:");
             // Get all numeric values of the MachineState enum, figure out the
-            // corresponding string name, and display.
+            // corresponding string name, and display. Enum.GetValues(Type enumType)
+            // returns an array, of the given enum's baseType, of the values of
+            // the constants in an enumeration.
             foreach (byte value in Enum.GetValues(typeof(MachineState)))
             {
                 Console.WriteLine("Machine State Value: {0}: - Name: {1}",
