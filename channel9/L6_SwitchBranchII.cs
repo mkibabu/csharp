@@ -8,7 +8,7 @@ namespace SwitchStatements
     {
         public static void Main (string[] args)
         {
-            Console.WriteLine("Type a superheroe's name to see his/her nickname!");
+            Console.WriteLine("Type a superhero's name to see his/her nickname!");
             string name = Console.ReadLine();
             string message = "";
 
