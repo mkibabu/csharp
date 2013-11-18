@@ -43,7 +43,7 @@ namespace L29_ThreadPools
         public void Beta(Object state)
         {
             // Write out the hashcode and cookie for the current thread
-            Console.WriteLine(" {0} {1} :", 
+            Console.WriteLine("HashCode and cookie for current thread: {0} {1}", 
                 Thread.CurrentThread.GetHashCode(), ((State)state).Cookie);
 
             Console.WriteLine("HashCount.Count == {0}, Thread.CurrentThread.GetHashCode == {1}",
@@ -89,8 +89,59 @@ namespace L29_ThreadPools
         static void Main(string[] args)
         {
             Console.WriteLine("Thread pool sample:");
-            bool w2k = false;
-            int maxCount = 10;
+            bool W2K = false;
+            // allow a total of 10 threads in the pool
+            int MaxCount = 10;
+            // mark the event as unsignalled
+            ManualResetEvent eventX = new ManualResetEvent(false);
+            Console.WriteLine("Queueing {0} items to Thread Pool", MaxCount);
+            // create the work items
+            Alpha oAplha = new Alpha(MaxCount);
+            // make sure the work items have a reference to the signalling event
+            oAplha.eventX = eventX;
+            Console.WriteLine("Queue to Thread Pool 0");
+
+            try
+            {
+                // queue the work items, which has the added effect of checking
+                //  which os is running. The QueueUserWorkItem method queues a 
+                // methods for execution, and specifies an object containing data
+                // to be used by the method.
+                ThreadPool.QueueUserWorkItem(new WaitCallback(oAplha.Beta), new State(0));
+                W2K = true;
+            }
+            catch (NotSupportedException e)
+            {
+                Console.WriteLine("These APIs may fail when called on a non-Windows 2000 system");
+                Console.WriteLine(e);
+            }
+            if (W2K)    // if running on an OS that supports the ThreadPool API
+            {
+                for (int iItem = 0; iItem < MaxCount; iItem++)
+                {
+                    // queue the work items
+                    Console.WriteLine("Queue to Thread Pool {0}", iItem);
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(oAplha.Beta), new State(0));
+                }
+                Console.WriteLine("Waiting for Thread Pool to drain");
+                // the eventX.WaitOne() method sets the event to wait until
+                // eventX.Set() occurs. The Set() call is done in Alpha.Beta
+                // Wait until the event is fired, meaning eventX.Set() has been
+                // signalled.
+                eventX.WaitOne(Timeout.Infinite, true);
+                // the WaitOne won't return until the event has been signalled
+                Console.WriteLine("Thread Pool has been drained (Event Fired)");
+                Console.WriteLine();
+                Console.WriteLine("Load across threads:");
+                foreach (object item in oAplha.HashCount.Keys)
+                {
+                    Console.WriteLine("{0} - {1}", item, oAplha.HashCount[item]);
+                }
+
+            }
+
+
+            Console.ReadLine();
         }
     }
 }
