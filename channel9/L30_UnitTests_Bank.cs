@@ -22,7 +22,60 @@ namespace BankUTest
         // MethodUnderTest_TestCondition_RespondsInThisManner()
         // { Arrange: Act; Assert }
 
-        //! First test: verify that a valid amount leads to a withdrawal
+        //! First test:
+        // Verify that a newly created account is not frozen
+        [TestMethod]
+        public void Account_NewAccountIsUnfrozen()
+        {
+            // arrange
+            double startBalance = 100.99;
+            // act
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+            // assert
+            Assert.AreEqual(testAccount.AccountFrozen, false, "New account should not be frozen");
+        }
+        
+        // Verify that an account can be frozen
+        [TestMethod]
+        public void AccountFrozen_UnfrozenAccountCanBeFrozen()
+        {
+            // arrange
+            double startBalance = 100.99;
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+
+            // act
+            testAccount.AccountFrozen = true;
+
+            // assert
+            Assert.AreEqual(testAccount.AccountFrozen, true, "Frozen account should have its \"Frozen\" status set to \"true\"");
+        }
+
+        // Verify that an account can be unfrosen, once frozen
+        [TestMethod]
+        public void AccountFrozen_FrozenAccountCanBeUnfrozen()
+        {
+            // arrange
+            double startBalance = 11.99;
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+            testAccount.AccountFrozen = true;
+
+            // act
+            if (testAccount.AccountFrozen)
+            {
+                testAccount.AccountFrozen = false;
+            }
+            else
+            {
+                Assert.Fail("Account freezing failed, thus unfreezing could not be tested.");
+                return;
+            }
+            
+            // assert
+            Assert.AreEqual(testAccount.AccountFrozen, false, "Frozen account could not be unfrozen");
+
+        }
+        // verify that a valid amount leads to a withdrawal
+
         [TestMethod]
         public void Debit_WithValidAmount_ReducesBalance()
         {
@@ -43,8 +96,8 @@ namespace BankUTest
             Assert.AreEqual(expectedBalance, actualBalance, 0.001, "Account not debited correctly");
         }
 
-        //! Second test: verify that an ArgumentOutOfRange exception is thrown
-        //! when the amount to withdraw is less than 0
+        // verify that an ArgumentOutOfRange exception is thrown when the amount
+        // to withdraw is less than 0
        
 
         // Original unit test for amount less than 0. Adequate, but difficult to
@@ -87,7 +140,7 @@ namespace BankUTest
             catch (ArgumentOutOfRangeException e)
             {
                 // assert
-                StringAssert.Contains(e.Message, BankAccount.AmountLessThanZero);
+                StringAssert.Contains(e.Message, BankAccount.AmountLessThanZeroMessage);
                 return;
             }
 
@@ -96,8 +149,8 @@ namespace BankUTest
         
         }
 
-        //! Third test: verify that an ArgumentOutOfRange exception is thrown
-        //! when the amount to withdraw is greater then the balance
+        // verify that an ArgumentOutOfRange exception is thrown when the amount
+        // to withdraw is greater than the balance
         [TestMethod]
         public void Debit_WhenAmountIsMoreThanBalance_ThrowsArgumentOutOfRangeException()
         {
@@ -115,12 +168,138 @@ namespace BankUTest
             catch (ArgumentOutOfRangeException e)
             {
                 // assert
-                StringAssert.Contains(e.Message, BankAccount.AmountMoreThanBalance);
+                StringAssert.Contains(e.Message, BankAccount.AmountMoreThanBalanceMessage);
                 return;
             }
 
             // Code run when ArgumentOutOfRangeException is not thrown.
             Assert.Fail("ArgumentOutOfRangeException was not thrown!");
         }
+
+        // Verify that an Exception is thrown when an attempt is made to debit 
+        // from a frozen account.
+        [TestMethod]
+        public void Debit_AccountFrozenValidAmount_ThrowsException()
+        {
+            // arrange
+            double startBalance = 10.00;
+            double debitAmount = 4.00;
+
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+            testAccount.AccountFrozen = true;
+
+            // act
+            try
+            {
+                testAccount.Debit(debitAmount);
+            }
+            catch (Exception e)
+            {
+                // assert
+                if (testAccount.AccountFrozen)
+                {
+                    StringAssert.Contains(e.Message, BankAccount.AccountFrozenMessage);
+                }
+                else
+                {
+                    Assert.Fail("Frozen account's \"frozen\" status not set to correct value");
+                }
+
+                return;
+            }
+
+
+            // Exception not called; test failed
+            Assert.Fail("Excpected exception not called");
+        
+        }
+
+        // verify that a valid amount leads to a deposit
+        [TestMethod]
+        public void Credit_ValidAmount_IncreasesBalance()
+        {
+            // arrange
+            double startBalance = 11.99;
+            double creditAmount = 5.00;
+            double expectedBalance = 16.99;
+
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+
+            // act
+            testAccount.Credit(creditAmount);
+
+            // assert
+            double actualBalance = testAccount.Balance;
+            // verify that the two amounts are equal, or within some specified
+            // accuracy of one another.
+            Assert.AreEqual(expectedBalance, actualBalance, 0.001, "Account not credited correctly");
+ 
+        }
+        
+        // verify that an ArgumentOutOfRange exception is thrown when the amount
+        // to deposit is less than zero
+        [TestMethod]
+        public void Credit_WhenAmountIsLessThanZero_ThrowsArgumentOutOfRangeException()
+        {
+            // arrange
+            double startBalance = 11.99;
+            double debitAmount = -100.00;
+
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+
+            // act
+            try
+            {
+                testAccount.Credit(debitAmount);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                // assert
+                StringAssert.Contains(e.Message, BankAccount.AmountLessThanZeroMessage);
+                return;
+            }
+
+            // Code to run if ArgumentOutOfRangeException is not thrown.
+            Assert.Fail("ArgumentOutOfRangeException was not thrown!");
+        
+        }
+        
+        // Verify that an Exception is thrown when an attempt is made to credit
+        // to a frozen account.
+        [TestMethod]
+        public void Credit_AccountFrozenValidAmount_ThrowsException()
+        {
+            // arrange
+            double startBalance = 10.00;
+            double creditAmount = 4.00;
+
+            BankAccount testAccount = new BankAccount("Mr. Cookie Monster", startBalance);
+            testAccount.AccountFrozen = true;
+
+            // act
+            try
+            {
+                testAccount.Credit(creditAmount);
+            }
+            catch (Exception e)
+            {
+                // assert
+                if (testAccount.AccountFrozen)
+                {
+                    StringAssert.Contains(e.Message, BankAccount.AccountFrozenMessage);
+                }
+                else
+                {
+                    Assert.Fail("Frozen account's \"frozen\" status does not reflect correct status");
+                }
+                
+                return;
+            }
+
+
+            // Exception not called; test failed
+            Assert.Fail("Expected exception not called");
+        
+        }   
     }
 }

@@ -24,8 +24,9 @@ namespace BankAccountNS
         private bool m_frozen = false;
 
         // variables used for error messages
-        public const string AmountLessThanZero = "Amount is less than zero";
-        public const string AmountMoreThanBalance = "Amount is more than available balance";
+        public const string AmountLessThanZeroMessage = "Amount is less than zero";
+        public const string AmountMoreThanBalanceMessage = "Amount is more than available balance";
+        public const string AccountFrozenMessage = "This account is frozen!";
 
         // good practice to always have a default contructor; however, to keep
         // other classes from calling it, make it private.
@@ -54,12 +55,18 @@ namespace BankAccountNS
             get { return m_balance;  }
         }
 
+        public bool AccountFrozen
+        {
+            get { return m_frozen;  }
+            set { m_frozen = value; }
+        }
+
         // private methods. Never repeat/copy-paste code
         private void checkIfAccountFrozen()
         {
             if (m_frozen)
             {
-                throw new Exception("Account frozen");
+                throw new Exception(AccountFrozenMessage);
             }
         }
 
@@ -67,24 +74,13 @@ namespace BankAccountNS
         {
             if (amount < 0)
             {
-                throw new ArgumentOutOfRangeException("Amount", amount, AmountLessThanZero);
+                throw new ArgumentOutOfRangeException("Amount", amount, AmountLessThanZeroMessage);
             }
         }
 
-        private void freezeAccount()
-        {
-            m_frozen = true;
-        }
-
-        private void unfreezeAccount()
-        {
-            m_frozen = false;
-        }
-
-
-        //! Starts with a known error: amount should be subtracted from
-        //! balance, not added. Corrected as project progresses, but original
-        // erroneous line commented out.
+        //! Starts with a known error: 
+        // amount should be subtracted from balance, not added. Corrected as 
+        // project progresses, but original erroneous line commented out.
         public void Debit(double amount)
         {
             checkIfAccountFrozen();
@@ -93,7 +89,7 @@ namespace BankAccountNS
 
             if (amount > m_balance)
             {
-                throw new ArgumentOutOfRangeException("Amount", amount, AmountMoreThanBalance);
+                throw new ArgumentOutOfRangeException("Amount", amount, AmountMoreThanBalanceMessage);
             }
 
             // m_balance += amount;    // original intentionally erroneous code
@@ -116,16 +112,16 @@ namespace BankAccountNS
         }
     }
 
-    public class BankMain
-    {
-        public static void Main()
-        {
-            BankAccount ba = new BankAccount("Mr. Bryan Walton", 11.99);
-            ba.Credit(5.77);
-            ba.Debit(11.22);
-            Console.WriteLine(ba.ToString());
+    //public class BankMain
+    //{
+    //    public static void Main()
+    //    {
+    //        BankAccount ba = new BankAccount("Mr. Bryan Walton", 11.99);
+    //        ba.Credit(5.77);
+    //        ba.Debit(11.22);
+    //        Console.WriteLine(ba.ToString());
 
-            Console.ReadLine();
-        }
-    }
+    //        Console.ReadLine();
+    //    }
+    //}
 }
